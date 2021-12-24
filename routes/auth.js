@@ -36,6 +36,7 @@ router.post('/', [
     validarCampos
 ],login);
 
+
 router.get('/renew',validarJWT, renewToken);
 
 

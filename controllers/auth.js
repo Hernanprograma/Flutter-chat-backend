@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const { generaJWT } = require("../helpers/jwt");
 
 
+
 const crearUsuario = async (req, res = response)  =>{
 
     const { email, password } =req.body;
@@ -64,7 +65,7 @@ const login = async (req, res = response)  =>{
         // Validar el password
         const validPassword = bcrypt.compareSync(password, usuarioDB.password);
         if(!validPassword){
-            return res.status(404).json({
+            return res.status(400).json({
                 ok: false,
                 msg: 'La contraseña no es válida'
             });
@@ -91,20 +92,26 @@ const login = async (req, res = response)  =>{
 
 
 }
-const renewToken = async(req,res = response) => {
+const renewToken = async(req, res = response) => {
 
-    const { uid } =req.uid;
+    const { uid } =req.body;
 
-    const token = await generaJWT(uid);
+    try {
+        const token = await generaJWT(uid);
+    
+        const usuario = await Usuario.findOne( uid );
+    
+    
+        res.json({
+            ok: true,
+            usuario,  
+            token
+        });
+    } catch (error) {
+        console.log(error);
+        
+    }
 
-    const usuario = await Usuario.findOne({ uid });
-
-
-    res.json({
-        ok: true,
-        usuario,
-        token
-    });
 
 }
 
